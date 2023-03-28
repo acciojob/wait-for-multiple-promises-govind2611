@@ -1,52 +1,31 @@
-//your JS code here. If required.
-function getRandomTime() {
-  return Math.floor(Math.random() * 3000) + 1000;
-}
+ const promises = [
+    new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000)),
+    new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000)),
+    new Promise(resolve => setTimeout(() => resolve(Math.random() * 2 + 1), Math.random() * 2000 + 1000))
+  ];
 
-function createPromise(index) {
-  const time = getRandomTime();
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ index, time });
-    }, time);
-  });
-}
+  Promise.all(promises)
+    .then(results => {
+      const loadingRow = document.getElementById("loading");
+      loadingRow.parentNode.removeChild(loadingRow);
 
-const promises = [
-  createPromise(1),
-  createPromise(2),
-  createPromise(3),
-];
+      const table = document.querySelector("table");
+      let total = 0;
 
-const table = document.getElementById('table');
+      results.forEach((result, index) => {
+        const promiseNum = index + 1;
+        const timeTaken = result.toFixed(3);
+        total += result;
+        const row = table.insertRow();
+        const promiseCell = row.insertCell(0);
+        const timeTakenCell = row.insertCell(1);
+        promiseCell.textContent = `Promise ${promiseNum}`;
+        timeTakenCell.textContent = timeTaken;
+      });
 
-Promise.all(promises)
-  .then((results) => {
-    const totalTime = results.reduce((acc, cur) => acc + cur.time, 0) / 1000;
-
-    const tbody = table.getElementsByTagName('tbody')[0];
-    tbody.innerHTML = '';
-
-    results.forEach((result) => {
-      const tr = document.createElement('tr');
-      const td1 = document.createElement('td');
-      td1.textContent = `Promise ${result.index}`;
-      const td2 = document.createElement('td');
-      td2.textContent = `${result.time / 1000}`;
-      tr.appendChild(td1);
-      tr.appendChild(td2);
-      tbody.appendChild(tr);
+      const totalRow = table.insertRow();
+      const totalCell = totalRow.insertCell(0);
+      const totalTimeCell = totalRow.insertCell(1);
+      totalCell.textContent = "Total";
+      totalTimeCell.textContent = total.toFixed(3);
     });
-
-    const tr = document.createElement('tr');
-    const td1 = document.createElement('td');
-    td1.textContent = 'Total';
-    const td2 = document.createElement('td');
-    td2.textContent = `${totalTime.toFixed(3)}`;
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    tbody.appendChild(tr);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
