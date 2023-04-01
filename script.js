@@ -1,31 +1,46 @@
-//your JS code here. If required.
-// create three promises that resolve after a random time between 1 and 3 seconds
-  const promise1 = new Promise((resolve) => setTimeout(() => resolve('Promise 1'), Math.random() * 2000 + 1000));
-  const promise2 = new Promise((resolve) => setTimeout(() => resolve('Promise 2'), Math.random() * 2000 + 1000));
-  const promise3 = new Promise((resolve) => setTimeout(() => resolve('Promise 3'), Math.random() * 2000 + 1000));
+let rows=document.querySelector("#output");
 
-  // wait for all promises to resolve using Promise.all
-  Promise.all([promise1, promise2, promise3])
-    .then((results) => {
-      // remove the loading text
-      const loadingRow = document.getElementById('loading');
-      loadingRow.parentNode.removeChild(loadingRow);
+	rows.innerHTML=
+		`<tr id="loading">
+		  <td colspan=2 >Loading...</td>
+		  </tr>`;
 
-      // populate the table with the results
-      const tableBody = document.querySelector('tbody');
-      results.forEach((result, index) => {
-        const row = tableBody.insertRow(index);
-        const promiseCell = row.insertCell(0);
-        promiseCell.textContent = result;
-        const timeTakenCell = row.insertCell(1);
-        timeTakenCell.textContent = ((index + 1) * 1000 + Math.random() * 2000) / 1000;
-      });
+let p1 = new Promise((resolve,reject)=>{
+	let time1=Math.random()*2+1;
+	setTimeout(()=>{
+		resolve(time1);
+	},time1*1000);
+});
 
-      // add a row for the total time taken
-      const totalRow = tableBody.insertRow();
-      const totalCell = totalRow.insertCell(0);
-      totalCell.textContent = 'Total';
-      const totalTimeTakenCell = totalRow.insertCell(1);
-      totalTimeTakenCell.textContent = (Date.now() - performance.timing.navigationStart) / 1000;
-    });
-       
+let p2 = new Promise((resolve,reject)=>{
+	let time2=Math.random()*2+1;
+	setTimeout(()=>{
+		resolve(time2);
+	},time2*1000);
+});
+
+let p3 = new Promise((resolve,reject)=>{
+	let time3=Math.random()*2+1;
+	setTimeout(()=>{
+		resolve(time3);
+	},time3*1000);
+});
+
+Promise.all([p1,p2,p3]).then((result)=>{
+	let sum=0;
+	rows.innerHTML="";
+	for(var i=0;i<result.length;i++){
+		sum +=result[i];
+		rows.innerHTML +=
+			`<tr>
+			   <td>Promise ${i+1}</td>
+				<td>${result[i]}</td>
+			</tr>`;
+		
+	}
+	rows.innerHTML +=
+			`<tr>
+			   <td>Total</td>
+				<td>${sum}</td>
+			</tr>`;
+})
